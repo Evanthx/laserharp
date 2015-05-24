@@ -1,3 +1,13 @@
+#include <GinSing.h>
+#include <GinSingDefs.h>
+#include <GinSingMaster.h>
+#include <GinSingPoly.h>
+#include <GinSingPreset.h>
+#include <GinSingSerial.h>
+#include <GinSingSerialMacros.h>
+#include <GinSingSynth.h>
+#include <GinSingVoice.h>
+
 #include <Wire.h>
 #include <GinSing.h>
 #include <Adafruit_MotorShield.h>
