@@ -13,7 +13,9 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-boolean debug = false;
+//When debugging I wanted more information. So ... set this boolean to true
+//to get more stuff printed to the console.
+const boolean debug = false;
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
@@ -33,19 +35,17 @@ GinSingPoly * poly;
 #define GINSING0 0                                      
 #define GINSING1 1   
 
-int lightSensorPin = 0;
+const int lightSensorPin = 0;
 
 const int stepSize = 1;
 const int delayBetweenSteps = 15;  
 const int numberNotes = 7;  
 const int pluckDelta = 30;
 
-int reflectedLightValues[numberNotes + 1];
-boolean pluckedNotes[numberNotes + 1];
 GSNote ginsingNotes[numberNotes + 1];
 
-int buttonApin = 9;
-int buttonBpin = 8;
+const int buttonApin = 9;
+const int buttonBpin = 8;
 
 void setup()
 {
@@ -59,11 +59,6 @@ void setup()
   
   AFMS.begin();  // create with the default frequency 1.6KHz
   myMotor->setSpeed(250);  
-
-  //Get some initial values for each light string
-  for (int i = 0; i < numberNotes; i++) { 
-    reflectedLightValues[i] = analogRead(lightSensorPin);
-  }
 
   setupGinSing();
 }
@@ -137,10 +132,11 @@ void checkSonar() {
    ginsingNotes[6] = (GSNote)(baseValue + 6);
 }
 
-
+//These two are the notes that Ginsing is currently playing.
 int ginsingNote0 = -1;
 int ginsingNote1 = -1;
 
+//FirstNote and SecondNote are the notes we want to be playing.
 void playNote(int firstNote, int secondNote) {
 
   if (debug) {
@@ -150,60 +146,36 @@ void playNote(int firstNote, int secondNote) {
     Serial.print(secondNote);
   }
 
+  //Not playing any notes? Stop and done.
   if (firstNote == -1 && secondNote == -1) {
     poly->release ( GINSING0 ); 
     poly->release ( GINSING1 ); 
     return;
   }
 
-  //Now - at least one note is getting played. Is it already being played?
-  //If so leave it alone. Otherwise assign it to one of the Ginsing notes.
-  int newNote0 = -1;
-  int newNote1 = -1;
-
-  //First note. Is it already being played? Keep it.
-  if (firstNote == ginsingNote0) {
-    newNote0 = firstNote;
-    firstNote = -1;
-  } else if (firstNote == ginsingNote1) {
-    newNote1 =  firstNote;
-    firstNote = -1;
+  //Are we playing one note or two?
+  if (secondNote == -1) {
+	  //One note. Assign it and done. Just make sure that if 
+	  //someone is already playing, then that's the one that gets the
+	  //new note.
+	  if (ginsingNote1 == -1) {
+		  ginsingNote0 == firstNote;
+	  } else {
+		  ginsingNote1 = firstNote;
+	  }
+  } else {
+	  //Two notes. it's either a direct assignment or a switch.
+	  if (ginsingNote0 == firstNote || ginsingNote1 == secondNote) {
+		  //At least one matched. Make sure they both do.
+		  ginsingNote0 = firstNote;
+		  ginsingNote1 = secondNote; 
+	  } else {
+		  //The didn't match. Reverse them.
+		  ginsingNote1 = firstNote;
+		  ginsingNote0 = secondNote;
+	  }
   }
 
-  //Is the second note being played already?
-  if (secondNote != -1) {
-    if (secondNote == ginsingNote0) {
-      newNote0 =  secondNote;
-      secondNote = -1;
-    } 
-    else if (secondNote == ginsingNote1) {
-      newNote1 =  secondNote;
-      secondNote = -1;
-    }
-  }
-
-  //So are there any NEW notes? Stick them somewhere.
-  if (firstNote != -1) {
-    if (newNote0 == -1) {
-      newNote0 = firstNote;
-    } 
-    else {
-      newNote1 = firstNote;
-    }
-  }
-
-  if (secondNote != -1) {
-    if (newNote0 == -1) {
-      newNote0 = secondNote;
-    } 
-    else {
-      newNote1 = secondNote;
-    }
-  }
-
-  //Awesome. Now play or release notes.
-  ginsingNote0 = newNote0;
-  ginsingNote1 = newNote1;
 
   if (ginsingNote0 == -1) {
     poly->release ( GINSING0 ); 
@@ -223,9 +195,8 @@ void playNote(int firstNote, int secondNote) {
 
 }
 
-
-
-
+//Move the motor one step. Sleep, then take a light reading. The sleep
+//gives the sensor time to actually report the new reading.
 int stepTheMotorAndGetLightReading(int directionToStep) {
   myMotor->step(stepSize, directionToStep, DOUBLE); 
   delay(delayBetweenSteps);   
@@ -233,8 +204,8 @@ int stepTheMotorAndGetLightReading(int directionToStep) {
   return currentLightReading;
 }
 
-
-void reportNotes() {
+//Is debug on? If so print some data.
+void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
   if (debug) {
     for (int i = 0; i < numberNotes; i++) {
       Serial.print(i);
@@ -247,7 +218,6 @@ void reportNotes() {
   //So ... are any light readings different from any others?
   //To find the anomaly, see how different each string is to every other string.
   //One or two strings should stand out. Those are the plucked strings.
-
   for (int testString = 0; testString < numberNotes; testString++) {
     pluckedNotes[testString] = false;
 
@@ -317,8 +287,7 @@ void reportNotes() {
   return;
 }
 
-
-
+//Is a button pressed? If so move the motor a bit. This lets the user adjust the laser fan so it's pointing upwards properly.
 void checkButtons() {
   if (digitalRead(buttonApin) == LOW) {
     myMotor->step(stepSize, BACKWARD, DOUBLE); 
@@ -333,12 +302,20 @@ void checkButtons() {
 void loop()
 {
 
-  //return;
   //There must be at least a handful notes for the code below to work right.
   if (numberNotes < 5) {
     return;
   }
 
+  boolean pluckedNotes[numberNotes + 1];
+  int reflectedLightValues[numberNotes + 1];
+
+ //Get some initial values for each light string
+  for (int i = 0; i < numberNotes; i++) { 
+    reflectedLightValues[i] = analogRead(lightSensorPin);
+    pluckedNotes[i] = false;
+  }
+  
   int reading = analogRead(lightSensorPin);
   //Run the laser forward, read all values, and see what is there. Note that this pretty much uses one
   //less note than requested - but the START position counts as a spot. So moving it numberNotes makes that many
@@ -348,14 +325,14 @@ void loop()
   for (int i = 1; i < numberNotes; i++) {
     reflectedLightValues[i] = stepTheMotorAndGetLightReading(FORWARD);
     checkSonar();
-    reportNotes();
+	checkNotes(reflectedLightValues, pluckedNotes);
   }
 
   //It just read item 7. So going backwards, read items 6 through zero.
   for (int i = numberNotes-2; i >= 0; i--) {
     reflectedLightValues[i] = stepTheMotorAndGetLightReading(BACKWARD);
     checkSonar();
-    reportNotes();
+	checkNotes(reflectedLightValues, pluckedNotes);
   }
     
   checkButtons();
