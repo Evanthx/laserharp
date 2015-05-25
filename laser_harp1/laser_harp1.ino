@@ -1,4 +1,4 @@
-#include <GinSing.h>
+ #include <GinSing.h>
 #include <GinSingDefs.h>
 #include <GinSingMaster.h>
 #include <GinSingPoly.h>
@@ -34,8 +34,6 @@ GinSingPoly * poly;
 #define GINSING1 1   
 
 int lightSensorPin = 0;
-int initialLightReading;
-int brokenBeamReading;
 
 const int stepSize = 1;
 const int delayBetweenSteps = 15;  
@@ -60,19 +58,17 @@ void setup()
   pinMode(buttonBpin, INPUT_PULLUP);
   
   AFMS.begin();  // create with the default frequency 1.6KHz
-  myMotor->setSpeed(250);  // 10 rpm  
-  initialLightReading = analogRead(lightSensorPin);
-  brokenBeamReading = initialLightReading / 2;
+  myMotor->setSpeed(250);  
 
+  //Get some initial values for each light string
   for (int i = 0; i < numberNotes; i++) { 
     reflectedLightValues[i] = analogRead(lightSensorPin);
   }
 
   setupGinSing();
-  
 }
 
-
+//This is the code required to get GinSing ready to go.
 void setupGinSing() {
   GS.begin ( rcvPin , sndPin , ovfPin );               // start the device (required) and enter preset mode
   //For preset mode - change this when going to poly mode
@@ -85,7 +81,7 @@ void setupGinSing() {
   setupGinsingNotes();
 }
 
-
+//These are the notes I want to play with GinSing.
 void setupGinsingNotes() {
   ginsingNotes[0] = C_4;
   ginsingNotes[1] = D_4;
@@ -96,16 +92,8 @@ void setupGinsingNotes() {
   ginsingNotes[6] = B_4;
 }
 
-void footpetalNotes() {
-  ginsingNotes[0] = C_1;
-  ginsingNotes[1] = D_2;
-  ginsingNotes[2] = E_1;
-  ginsingNotes[3] = F_1;
-  ginsingNotes[4] = G_1;
-  ginsingNotes[5] = A_1;
-  ginsingNotes[6] = B_1;
-}
-
+//This code is used to take the sonar reading and convert
+//that into something to change the GinSing note being played.
 int findMultiplier(int height) {
   /*
   Over 170 = nothing
@@ -124,6 +112,8 @@ int findMultiplier(int height) {
   return 0;
 }
 
+//Read the sonar unit and figure out if the
+//notes should move up or down 
 void checkSonar() {
   int height = analogRead(1);
 
@@ -145,11 +135,9 @@ void checkSonar() {
    ginsingNotes[4] = (GSNote)(baseValue + 4);
    ginsingNotes[5] = (GSNote)(baseValue + 5);
    ginsingNotes[6] = (GSNote)(baseValue + 6);
-   
 }
 
 
-boolean notePlaying = false;
 int ginsingNote0 = -1;
 int ginsingNote1 = -1;
 
@@ -173,13 +161,11 @@ void playNote(int firstNote, int secondNote) {
   int newNote0 = -1;
   int newNote1 = -1;
 
-  //First note. It can't be -1 due to the logic just above.
-  //Is it already being played? Keep it.
+  //First note. Is it already being played? Keep it.
   if (firstNote == ginsingNote0) {
     newNote0 = firstNote;
     firstNote = -1;
-  } 
-  else if (firstNote == ginsingNote1) {
+  } else if (firstNote == ginsingNote1) {
     newNote1 =  firstNote;
     firstNote = -1;
   }
@@ -206,7 +192,6 @@ void playNote(int firstNote, int secondNote) {
     }
   }
 
-  //So are there any NEW notes? Stick them somewhere.
   if (secondNote != -1) {
     if (newNote0 == -1) {
       newNote0 = secondNote;
@@ -248,18 +233,8 @@ int stepTheMotorAndGetLightReading(int directionToStep) {
   return currentLightReading;
 }
 
-float rawRange = 1024; // 3.3v
-float logRange = 5.0; // 3.3v = 10^5 lux
 
-float RawToLux(int raw)
-{
-float logLux = raw * logRange / rawRange;
-return pow(10, logLux);
-}
-
-
-void detectANote() {
-  checkSonar();
+void reportNotes() {
   if (debug) {
     for (int i = 0; i < numberNotes; i++) {
       Serial.print(i);
@@ -372,25 +347,17 @@ void loop()
   //It's already read the zero item. So read array items 1 through 7.
   for (int i = 1; i < numberNotes; i++) {
     reflectedLightValues[i] = stepTheMotorAndGetLightReading(FORWARD);
-    //    Serial.print(i);
-    //   Serial.print("=");
-    //  Serial.print(reflectedLightValues[i]);
-    //  Serial.print(" - ");
-    detectANote();
+    checkSonar();
+    reportNotes();
   }
 
-  checkSonar();
   //It just read item 7. So going backwards, read items 6 through zero.
   for (int i = numberNotes-2; i >= 0; i--) {
     reflectedLightValues[i] = stepTheMotorAndGetLightReading(BACKWARD);
-    //   Serial.print(i);
-    //   Serial.print("=");
-    //   Serial.print(reflectedLightValues[i]);
-    //   Serial.print(" - ");
-    detectANote();
+    checkSonar();
+    reportNotes();
   }
-
-//  checkSonar();
+    
   checkButtons();
   
 }
