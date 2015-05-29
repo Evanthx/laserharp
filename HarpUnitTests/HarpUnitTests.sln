@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarpUnitTests", "HarpUnitTests.vcxproj", "{EB83B485-8736-45F3-B118-90C5A9DAA708}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HarpLibrary", "..\HarpLibrary.vcxproj", "{CF1EDF9A-4F9F-44A4-9BFE-7C529CD7F944}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB83B485-8736-45F3-B118-90C5A9DAA708}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB83B485-8736-45F3-B118-90C5A9DAA708}.Debug|Win32.Build.0 = Debug|Win32
+		{EB83B485-8736-45F3-B118-90C5A9DAA708}.Release|Win32.ActiveCfg = Release|Win32
+		{EB83B485-8736-45F3-B118-90C5A9DAA708}.Release|Win32.Build.0 = Release|Win32
+		{CF1EDF9A-4F9F-44A4-9BFE-7C529CD7F944}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CF1EDF9A-4F9F-44A4-9BFE-7C529CD7F944}.Debug|Win32.Build.0 = Debug|Win32
+		{CF1EDF9A-4F9F-44A4-9BFE-7C529CD7F944}.Release|Win32.ActiveCfg = Release|Win32
+		{CF1EDF9A-4F9F-44A4-9BFE-7C529CD7F944}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

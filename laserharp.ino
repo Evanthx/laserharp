@@ -13,8 +13,11 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
+#include "HarpLibrary.h"
+
 //When debugging I wanted more information. So ... set this boolean to true
-//to get more stuff printed to the console.
+//to get more stuff printed to the console. When it's true the console dumps LOTS of
+//great stuff - but the code CRAWLS and the laser harp isn't great.
 const boolean debug = false;
 
 // Create the motor shield object with the default I2C address
@@ -46,6 +49,8 @@ GSNote ginsingNotes[numberNotes + 1];
 
 const int buttonApin = 9;
 const int buttonBpin = 8;
+
+HarpLibrary harpLib;
 
 void setup()
 {
@@ -115,7 +120,7 @@ void checkSonar() {
   //if (debug) {
     Serial.print("Distance:");
     Serial.println(height);
- // }
+  //}
 
   if (height > 170) {
     return;
@@ -146,37 +151,9 @@ void playNote(int firstNote, int secondNote) {
     Serial.print(secondNote);
   }
 
-  //Not playing any notes? Stop and done.
-  if (firstNote == -1 && secondNote == -1) {
-    poly->release ( GINSING0 ); 
-    poly->release ( GINSING1 ); 
-    return;
-  }
-
-  //Are we playing one note or two?
-  if (secondNote == -1) {
-	  //One note. Assign it and done. Just make sure that if 
-	  //someone is already playing, then that's the one that gets the
-	  //new note.
-	  if (ginsingNote1 == -1) {
-		  ginsingNote0 == firstNote;
-	  } else {
-		  ginsingNote1 = firstNote;
-	  }
-  } else {
-	  //Two notes. it's either a direct assignment or a switch.
-	  if (ginsingNote0 == firstNote || ginsingNote1 == secondNote) {
-		  //At least one matched. Make sure they both do.
-		  ginsingNote0 = firstNote;
-		  ginsingNote1 = secondNote; 
-	  } else {
-		  //The didn't match. Reverse them.
-		  ginsingNote1 = firstNote;
-		  ginsingNote0 = secondNote;
-	  }
-  }
-
-
+  //Pick the notes to be played and which channel to play them on
+  harpLib.pickNotes(ginsingNote0, ginsingNote1, firstNote, secondNote);
+ 
   if (ginsingNote0 == -1) {
     poly->release ( GINSING0 ); 
   } 
@@ -301,7 +278,7 @@ void checkButtons() {
 
 void loop()
 {
-
+  
   //There must be at least a handful notes for the code below to work right.
   if (numberNotes < 5) {
     return;
