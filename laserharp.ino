@@ -13,12 +13,13 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_PWMServoDriver.h"
 
-#include "HarpLibrary.h"
+#include "HarpNoteChoice.h"
+#include "HarpNoteDetection.h"
 
 //When debugging I wanted more information. So ... set this boolean to true
 //to get more stuff printed to the console. When it's true the console dumps LOTS of
 //great stuff - but the code CRAWLS and the laser harp isn't great.
-const boolean debug = false;
+const boolean debug = true;
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
@@ -43,17 +44,18 @@ const int lightSensorPin = 0;
 const int stepSize = 1;
 const int delayBetweenSteps = 15;  
 const int numberNotes = 7;  
-const int pluckDelta = 30;
 
 GSNote ginsingNotes[numberNotes + 1];
 
 const int buttonApin = 9;
 const int buttonBpin = 8;
 
-HarpLibrary harpLib;
+HarpNoteChoice harpNoteChoice;
+HarpNoteDetection harpNoteDetector;
 
 void setup()
 {
+  harpNoteDetector.setNumNotes(numberNotes);
   Serial.begin(9600);
   
   //For the light sensor
@@ -152,7 +154,7 @@ void playNote(int firstNote, int secondNote) {
   }
 
   //Pick the notes to be played and which channel to play them on
-  harpLib.pickNotes(ginsingNote0, ginsingNote1, firstNote, secondNote);
+  harpNoteChoice.pickNotes(ginsingNote0, ginsingNote1, firstNote, secondNote);
  
   if (ginsingNote0 == -1) {
     poly->release ( GINSING0 ); 
@@ -195,24 +197,8 @@ void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
   //So ... are any light readings different from any others?
   //To find the anomaly, see how different each string is to every other string.
   //One or two strings should stand out. Those are the plucked strings.
-  for (int testString = 0; testString < numberNotes; testString++) {
-    pluckedNotes[testString] = false;
-
-    //We are looking at one string. Compare its reading to every other string. Is the difference over the threshhold?
-    //Comparing to yourself just returns a zero, so allow it (that's simpler!)
-    int counter = 0;
-    for (int comparisonString = 0; comparisonString < numberNotes; comparisonString++) {
-      int difference = abs(reflectedLightValues[testString] - reflectedLightValues[comparisonString]);
-      if (difference > pluckDelta) {
-        counter++;
-      }
-    }
-
-    if (counter > 3) {
-      pluckedNotes[testString] = true;
-    }
-  }
-
+  harpNoteDetector.checkNotes(reflectedLightValues, pluckedNotes);
+ 
   //Now - are three or more plucked? If so - wipe out the results. 
   int numPlucked = 0;
   for (int testString = 0; testString < numberNotes; testString++) {
@@ -284,8 +270,8 @@ void loop()
     return;
   }
 
-  boolean pluckedNotes[numberNotes + 1];
-  int reflectedLightValues[numberNotes + 1];
+  boolean pluckedNotes[numberNotes];
+  int reflectedLightValues[numberNotes];
 
  //Get some initial values for each light string
   for (int i = 0; i < numberNotes; i++) { 

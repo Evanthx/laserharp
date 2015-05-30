@@ -1,16 +1,15 @@
-#include "HarpLibrary.h"
+#include "HarpNoteChoice.h"
 
-
-HarpLibrary::HarpLibrary()
+HarpNoteChoice::HarpNoteChoice()
 {
 }
 
 
-HarpLibrary::~HarpLibrary()
+HarpNoteChoice::~HarpNoteChoice()
 {
 }
 
-void HarpLibrary::pickNotes(int& ginsingNote0, int& ginsingNote1, const int& firstNote, const int& secondNote) {
+void HarpNoteChoice::pickNotes(int& ginsingNote0, int& ginsingNote1, const int& firstNote, const int& secondNote) {
 
 	//Not playing any notes? Stop and done.
 	if (firstNote == -1 && secondNote == -1) {

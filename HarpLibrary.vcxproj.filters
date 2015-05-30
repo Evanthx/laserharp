@@ -18,12 +18,18 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HarpLibrary.h">
+    <ClInclude Include="HarpNoteChoice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HarpNoteDetection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HarpLibrary.cpp">
+    <ClCompile Include="HarpNoteChoice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HarpNoteDetection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

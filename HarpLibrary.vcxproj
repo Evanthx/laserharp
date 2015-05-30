@@ -74,10 +74,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HarpLibrary.h" />
+    <ClInclude Include="HarpNoteChoice.h" />
+    <ClInclude Include="HarpNoteDetection.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HarpLibrary.cpp" />
+    <ClCompile Include="HarpNoteChoice.cpp" />
+    <ClCompile Include="HarpNoteDetection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "../HarpLibrary.h"
+#include "../HarpNoteChoice.h"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace HarpUnitTests
 {
-	TEST_CLASS(HarpLibraryTest)
+	TEST_CLASS(HarpNoteChoiceTest)
 	{
 	public:
 		
@@ -16,7 +16,7 @@ namespace HarpUnitTests
 		int secondNote;
 		TEST_METHOD(TestPicknotesNone)
 		{
-			HarpLibrary harpLib;
+			HarpNoteChoice harpLib;
 			ginsingNote0 = 10;
 			ginsingNote1 = 20;
 
@@ -32,7 +32,7 @@ namespace HarpUnitTests
 
 		TEST_METHOD(TestPicknotesOne)
 		{
-			HarpLibrary harpLib;
+			HarpNoteChoice harpLib;
 			ginsingNote0 = 10;
 			ginsingNote1 = 20;
 			harpLib.pickNotes(ginsingNote0, ginsingNote1, 10, -1);
@@ -61,7 +61,7 @@ namespace HarpUnitTests
 
 		TEST_METHOD(TestPicknotesTwo)
 		{
-			HarpLibrary harpLib;
+			HarpNoteChoice harpLib;
 			ginsingNote0 = 10;
 			ginsingNote1 = 20;
 			harpLib.pickNotes(ginsingNote0, ginsingNote1, 10, 20);

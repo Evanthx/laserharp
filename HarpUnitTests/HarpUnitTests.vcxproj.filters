@@ -26,7 +26,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HarpLibraryTest.cpp">
+    <ClCompile Include="HarpNoteChoiceTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HarpNoteDetectionTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
