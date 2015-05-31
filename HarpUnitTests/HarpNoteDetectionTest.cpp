@@ -107,6 +107,30 @@ namespace HarpUnitTests
 			checkOneNotePlucked(6);
 		}
 
+		TEST_METHOD(GetNotesCase1) {
+			int note1, note2;
+			Assert::IsTrue(harpNotes.getNotes(note1, note2, pluckedNotes));
+			Assert::AreEqual(-1, note1);
+			Assert::AreEqual(-1, note2);
+		}
+
+		TEST_METHOD(GetNotesCase2) {
+			int note1, note2;
+			pluckedNotes[2] = true;
+			Assert::IsTrue(harpNotes.getNotes(note1, note2, pluckedNotes));
+			Assert::AreEqual(2, note1);
+			Assert::AreEqual(-1, note2);
+		}
+
+		TEST_METHOD(GetNotesCase3) {
+			int note1, note2;
+			pluckedNotes[0] = true;
+			pluckedNotes[6] = true;
+			Assert::IsTrue(harpNotes.getNotes(note1, note2, pluckedNotes));
+			Assert::AreEqual(0, note1);
+			Assert::AreEqual(6, note2);
+		}
+
 
 
 	};

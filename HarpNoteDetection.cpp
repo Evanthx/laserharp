@@ -39,3 +39,30 @@ void HarpNoteDetection::checkNotes(int reflectedLightValues[], bool pluckedNotes
 	return;
 }
 
+bool HarpNoteDetection::getNotes(int& note1, int& note2, bool pluckedNotes[]){
+
+	note1 = -1;
+	note2 = -1;
+	int numPlucked = 0;
+	for (int testString = 0; testString < numberNotes; testString++) {
+		if (pluckedNotes[testString]) {
+			numPlucked++;
+			if (note1 == -1) {
+				note1 = testString;
+			}
+			else {
+				note2 = testString;
+			}
+		}
+	}
+
+	if (numPlucked >= 3) {
+		//Too many strings! Fail the call.
+		return false;
+	}
+
+	//Yay! It was all good!
+	return true;
+}
+
+
