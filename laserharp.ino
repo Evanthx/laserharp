@@ -110,7 +110,8 @@ int findMultiplier(int height) {
 	if (height > 119) return 4;
 	if (height > 100) return 3;
 	if (height > 80) return 2;
-	if (height > 65) return 1;
+	//My speaker gets weird at the low values. So I commented that one out.
+//	if (height > 65) return 1;
 	return 0;
 }
 
@@ -119,10 +120,10 @@ int findMultiplier(int height) {
 void checkSonar() {
 	int height = analogRead(1);
 
-	//if (debug) {
-	Serial.print("Distance:");
-	Serial.println(height);
-	//}
+	if (debug) {
+		Serial.print("Height:");
+		Serial.println(height);
+	}
 
 	if (height > 170) {
 		return;
@@ -204,15 +205,15 @@ void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
 	//and hope the player gets his act straight.
 	int firstNote = -1;
 	int secondNote = -1;
-	if (harpNoteDetector.getNotes(firstNote, secondnote, pluckedNotes)) {
+	if (harpNoteDetector.getNotes(firstNote, secondNote, pluckedNotes)) {
 		if (debug) {
 			if (firstNote >= 0) {
 				Serial.print("==============PLUCKED 1: ");
 				Serial.println(firstNote);
 			}
-			if (secondnote >= 0) {
+			if (secondNote >= 0) {
 				Serial.print("==============PLUCKED 2: ");
-				Serial.println(secondnote);
+				Serial.println(secondNote);
 			}
 		}
 		playNote(firstNote, secondNote);
@@ -263,6 +264,8 @@ void loop()
 		checkSonar();
 		checkNotes(reflectedLightValues, pluckedNotes);
 	}
+
+	checkButtons();
 
 	//It just read item 7. So going backwards, read items 6 through zero.
 	for (int i = numberNotes - 2; i >= 0; i--) {
