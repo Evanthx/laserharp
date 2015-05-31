@@ -200,6 +200,11 @@ void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
   harpNoteDetector.checkNotes(reflectedLightValues, pluckedNotes);
  
   //Now - are three or more plucked? If so - wipe out the results. 
+  //We only allow two strings, so just call this one a mistake on the
+  //part of the player.
+  //TODO - is there a better way to handle this? Maybe if two strings
+  //are being played, and those are two of the plucked strings, 
+  //then just keep playing those two?
   int numPlucked = 0;
   for (int testString = 0; testString < numberNotes; testString++) {
     if (pluckedNotes[testString]) {
