@@ -19,7 +19,7 @@
 //When debugging I wanted more information. So ... set this boolean to true
 //to get more stuff printed to the console. When it's true the console dumps LOTS of
 //great stuff - but the code CRAWLS and the laser harp isn't great.
-const boolean debug = true;
+const boolean debug = false;
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -123,7 +123,7 @@ void checkSonar() {
 	if (debug) {
 		Serial.print("Height:");
 		Serial.println(height);
-	}
+	 }
 
 	if (height > 170) {
 		return;
@@ -261,20 +261,20 @@ void loop()
 	//It's already read the zero item. So read array items 1 through 7.
 	for (int i = 1; i < numberNotes; i++) {
 		reflectedLightValues[i] = stepTheMotorAndGetLightReading(FORWARD);
-		checkSonar();
 		checkNotes(reflectedLightValues, pluckedNotes);
 	}
 
 	checkButtons();
+        checkSonar();
 
 	//It just read item 7. So going backwards, read items 6 through zero.
 	for (int i = numberNotes - 2; i >= 0; i--) {
 		reflectedLightValues[i] = stepTheMotorAndGetLightReading(BACKWARD);
-		checkSonar();
 		checkNotes(reflectedLightValues, pluckedNotes);
 	}
 
 	checkButtons();
+        checkSonar();
 
 }
 
