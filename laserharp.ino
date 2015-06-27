@@ -53,6 +53,9 @@ const int buttonBpin = 8;
 HarpNoteChoice harpNoteChoice;
 HarpNoteDetection harpNoteDetector;
 
+boolean pluckedNotes[numberNotes];
+int reflectedLightValues[numberNotes];
+
 void setup()
 {
 	harpNoteDetector.setNumNotes(numberNotes);
@@ -66,6 +69,12 @@ void setup()
 
 	AFMS.begin();  // create with the default frequency 1.6KHz
 	myMotor->setSpeed(250);
+
+	//Get some initial values for each light string
+	for (int i = 0; i < numberNotes; i++) {
+		reflectedLightValues[i] = analogRead(lightSensorPin);
+		pluckedNotes[i] = false;
+	}
 
 	setupGinSing();
 }
@@ -123,7 +132,7 @@ void checkSonar() {
 	if (debug) {
 		Serial.print("Height:");
 		Serial.println(height);
-	 }
+	  }
 
 	if (height > 170) {
 		return;
@@ -206,7 +215,7 @@ void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
 	int firstNote = -1;
 	int secondNote = -1;
 	if (harpNoteDetector.getNotes(firstNote, secondNote, pluckedNotes)) {
-		if (debug) {
+		if (debug) {  
 			if (firstNote >= 0) {
 				Serial.print("==============PLUCKED 1: ");
 				Serial.println(firstNote);
@@ -218,7 +227,7 @@ void checkNotes(int reflectedLightValues[], boolean pluckedNotes[]) {
 		}
 		playNote(firstNote, secondNote);
 	}
-	else {
+	else if (debug) {
 		Serial.println("getNotes returned false - more than three notes were counted as plucked.");
 	}
 	return;
@@ -244,23 +253,13 @@ void loop()
 		return;
 	}
 
-	boolean pluckedNotes[numberNotes];
-	int reflectedLightValues[numberNotes];
-
-	//Get some initial values for each light string
-	for (int i = 0; i < numberNotes; i++) {
-		reflectedLightValues[i] = analogRead(lightSensorPin);
-		pluckedNotes[i] = false;
-	}
-
-	int reading = analogRead(lightSensorPin);
 	//Run the laser forward, read all values, and see what is there. Note that this pretty much uses one
 	//less note than requested - but the START position counts as a spot. So moving it numberNotes makes that many
 	//strings plus the start string.
 
 	//It's already read the zero item. So read array items 1 through 7.
 	for (int i = 1; i < numberNotes; i++) {
-		reflectedLightValues[i] = stepTheMotorAndGetLightReading(FORWARD);
+  		reflectedLightValues[i] = stepTheMotorAndGetLightReading(FORWARD);
 		checkNotes(reflectedLightValues, pluckedNotes);
 	}
 

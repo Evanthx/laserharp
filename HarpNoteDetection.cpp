@@ -1,6 +1,6 @@
 #include "HarpNoteDetection.h"
 
-const int pluckDelta = 30;
+const int pluckDelta = 25;
 
 HarpNoteDetection::HarpNoteDetection()
 {
